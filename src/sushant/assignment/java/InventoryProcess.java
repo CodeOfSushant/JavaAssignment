@@ -50,22 +50,65 @@ public class InventoryProcess {
             System.out.println("\n Enter Product Details");
 
             // Ask for product name
-            System.out.println("Enter the Product Name");
+            System.out.println(" Enter the Product Name");
             String productName = scanner.nextLine();
 
             // Ask for product Type..Raw,Manufactured,Imported
-            System.out.println("Enter the Type Of Product");
-            System.out.println("\n 1: Raw\n 2: Manufactured\n 3: Imported");
-            int itemType = Integer.parseInt(scanner.nextLine());
+            boolean valid = false;
+            int itemType=0;
+
+            // validation for choosing correct options
+            while(!valid) {
+                System.out.println(" Enter the Type Of Product");
+                System.out.println("\n 1: Raw\n 2: Manufactured\n 3: Imported");
+                try {
+                      itemType = Integer.parseInt(scanner.nextLine());
+                      if (itemType >= 1 && itemType <= 3) {
+                          valid = true;
+                      }else{
+                          System.out.println(" Wrong Choice ! choose from the above option");
+                      }
+
+                } catch (NumberFormatException e) {
+                    System.out.println(" Wrong Choice ! choose from the above option");
+                }
+            }
 
             // Ask for product quantity
-            System.out.println("Enter Quantity of product");
-            int productQuantity = Integer.parseInt(scanner.nextLine());
+            // check validation
+            valid = false;
+            int productQuantity=0;
+
+            while(!valid){
+                System.out.println(" Enter Quantity of product");
+                try{
+                productQuantity = Integer.parseInt(scanner.nextLine());
+                if(productQuantity>0)
+                     valid = true;
+                else
+                    System.out.println(" Enter valid quantity");
+            }catch(NumberFormatException e){
+                    System.out.println(" Invalid Entry ! Enter valid Quantity");
+                }
+            }
 
             // Ask for product price
-            System.out.println("Enter The Price of the Product");
-            double productPrice = Double.parseDouble(scanner.nextLine());
+            // Check for validation
+            valid =false;
+            double productPrice = 0.00;
 
+            while(!valid) {
+                System.out.println(" Enter The Price of the Product");
+                try {
+                    productPrice = Double.parseDouble(scanner.nextLine());
+                    if(productPrice>0)
+                        valid = true;
+                    else
+                        System.out.println(" Enter valid Price");
+                }catch(NumberFormatException e){
+                    System.out.println(" Enter valid price");
+                }
+            }
             // sales tax per item for Raw and Manufactured items.
             if(itemType!=3) {
                 salesTax = calSalesTax(itemType, productPrice);
@@ -73,9 +116,22 @@ public class InventoryProcess {
 
             // sales tax per item for Imported items.
             if(itemType==3) {
-                System.out.println("Enter The Type of Imported Product");
-                System.out.println("\n 1: Raw\n 2: Manufactured");
-                int impType = Integer.parseInt(scanner.nextLine());
+                valid = false;
+                int impType=0;
+                // Check for validation
+                while(!valid) {
+                    System.out.println(" Enter The Type of Imported Product");
+                    System.out.println("\n 1: Raw\n 2: Manufactured");
+                    try {
+                        impType = Integer.parseInt(scanner.nextLine());
+                        if (impType >= 1 && impType <= 2)
+                            valid = true;
+                        else
+                            System.out.println(" Enter valid options from above");
+                    } catch (NumberFormatException e) {
+                        System.out.println(" Enter valid Options from Above");
+                    }
+                }
                 salesTax = calSalesTax(impType,productPrice);
                 double impSalesTax = calSalesTax(salesTax,productPrice,10);
                 salesTax = impSalesTax;
@@ -90,9 +146,9 @@ public class InventoryProcess {
 
             // Add product details to an arraylist.
             inventoryList.add(newinventory);
-            System.out.println("Product added:"+newinventory.getProductName());
+            System.out.println(" Product added:"+newinventory.getProductName());
 
-            System.out.println("Do you want to add more product? (y/n)");
+            System.out.println(" Do you want to add more product? (y/n)");
             String choice = scanner.next().trim().toLowerCase();
             scanner.nextLine();
             if(!choice.equals("y")){
