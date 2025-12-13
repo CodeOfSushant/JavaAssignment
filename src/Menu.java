@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class Menu {
 
@@ -10,20 +11,21 @@ public class Menu {
 
     protected static char[] course = new char[4];
 
+    //  This list will contain data in add-user-runtime.
     static List<StudentDetails> newStudentDetailList = new ArrayList<>();
+
+    // readList and currentList will use for getting and passing data
     static List<StudentDetails> currentList = new ArrayList<>();
     static List<StudentDetails> readList = new ArrayList<>();
 
-    static String fileName = "studentdetails.txt";
     static Scanner scanner = new Scanner(System.in);
 
 
     // user addition function
     public static void addUser() {
         Scanner scanner = new Scanner(System.in);
-        boolean play = true;
-        while (play) {
-
+        boolean adduser = true;
+        while (adduser) {
             // Ask For UserName and check for validation
             while (true) {
                 System.out.println(" Enter Student's Full Name");
@@ -35,8 +37,9 @@ public class Menu {
                 if (name.matches("^[a-zA-Z ]+$")) {
                     break;
                 }
-                else
+                else {
                     System.out.println(" Enter valid Name ");
+                }
 
             }
             // Ask For User Age
@@ -44,10 +47,12 @@ public class Menu {
                 System.out.println(" Enter Student's Age");
                 try {
                     age = Integer.parseInt(scanner.nextLine());
-                    if (age <= 0)
+                    if (age <= 0) {
                         System.out.println(" Enter valid Age");
-                    if (age > 0)
+                    }
+                    if (age > 0) {
                         break;
+                    }
                 } catch (NumberFormatException e) {
                     System.out.println(" Enter valid Age");
                 }
@@ -56,36 +61,39 @@ public class Menu {
             while (true) {
                 System.out.println(" Enter the Student's Address");
                 address = scanner.nextLine();
-                if (address.isBlank())
+                if (address.isBlank()) {
                     System.out.println(" Enter valid Address");
-                else
+                }
+                else {
                     break;
+                }
             }
             // Ask For User rollno
-            int g = 0;
+            int rollNoFound = 0;
             while (true) {
                 System.out.println(" Enter Student's Roll no");
                 try {
                     rollNo = Long.parseLong(scanner.nextLine());
                     if (rollNo > 0) {
-                        List<StudentDetails> currentList = displayAllUser();
+                        currentList = displayAllUser();
                         Iterator<StudentDetails> iterator = currentList.iterator();
                         while (iterator.hasNext()) {
                             StudentDetails data = iterator.next();
                             if (data.rollNo == rollNo) {
                                 System.out.println(+rollNo + " is already assigned to others. please Enter Unique Roll No");
-                                g = 1;
+                                rollNoFound = 1;
                             }
                         }
-                        if (g == 1) {
+                        if (rollNoFound == 1) {
                             currentList.clear();
-                            g = 0;
+                            rollNoFound = 0;
                             continue;
                         }
                         break;
                     }
-                    if (rollNo <= 0)
+                    if (rollNo <= 0) {
                         System.out.println(" Enter valid Roll No");
+                    }
                 } catch (NumberFormatException e) {
                     System.out.println(" Enter Valid Roll No");
                 }
@@ -93,10 +101,8 @@ public class Menu {
             // Ask for set of courses and check for validation;
 
             System.out.println(" Choose any four courses out of following .\n A\t B\t C\t D\t E\t F");
-            System.out.println(course.length);
             for (int i = 0; i < course.length; i++) {
                 while (true) {
-
                     try {
                         String c = scanner.nextLine();
                         // check for input character .
@@ -108,18 +114,15 @@ public class Menu {
                                 course[i] = Character.toUpperCase(ch);
                                 break;
                             } else {
-                                System.out.println(" Dont't Enter Duplicate Course. choose from the Unselected:");
+                                System.out.println(" Don't Enter Duplicate Course. choose from the Unselected:");
                             }
-
                         } else {
                             System.out.println(" Enter valid Course");
                         }
                     } catch (InputMismatchException e) {
                         System.out.println(" Enter valid course");
                     }
-
                 }
-
             }
 
             // create object to initiate values to the field and add to the list.
@@ -127,82 +130,81 @@ public class Menu {
             newStudentDetailList.add(newStudentDetails);
             System.out.println(newStudentDetails.name+"'s Data has been added ");
             course = new char[course.length];
-
             System.out.println(" You Want To add More User? Enter n for No and any Key for Yes:");
             String choice = scanner.next().trim().toLowerCase();
             scanner.nextLine();
             if (choice.equals("n")) {
-                play = false;
+                adduser = false;
             }
-
         }
     }
 
     // Function will Return Details of All the Users.
     public static List<StudentDetails> displayAllUser() {
         currentList = Serialize.readDataFromDisc();
-
         return currentList;
     }
-
+    // Function to read Data for special Roll No from Synchronised method and display to command line
     public static void displayByRollNo() {
         readList = displayAllUser();
         if (readList.isEmpty()) {
             System.out.println(" Student Record is empty: please Add some Record:  ");
             return;
         }
-        boolean b = true;
+        boolean notgetRoll = true;
         long roll = 0;
         System.out.println(" Enter The Roll No: ");
-        while (b) {
+        while (notgetRoll) {
             try {
                 roll = Long.parseLong(scanner.nextLine());
                 if (roll <= 0) {
                     System.out.println(" Roll No Cant Be a Zero or Below : Enter Valid Roll No");
                 } else {
-                    b = false;
+                    notgetRoll = false;
                 }
             } catch (NumberFormatException e) {
                 System.out.println(" This is Not a Roll No : please Enter Correct Roll no .");
             }
         }
         Iterator<StudentDetails> iterator = readList.iterator();
-        boolean show = false;
+        boolean getRoll = false;
         while (iterator.hasNext()) {
             StudentDetails data = iterator.next();
             if (data.rollNo == roll) {
-                show = true;
-                if (show) {
-                    System.out.println(" The Student Details for Roll No " + roll + "is :\n " + data);
+                getRoll = true;
+                if (getRoll) {
+                    System.out.println(" The Student Details for Roll No " + roll + "is :\n " );
+                    System.out.printf("%-30s %-5s %-30s %15s%n", "NAME", "AGE", "ADDRESS", "ROLL NO", "COURSE");
+                    System.out.println("--------------------------------------------------------------------------------------------");
+                    System.out.printf("%-30s %-5d %-30s %15d%n", data.name, data.age, data.address, data.rollNo);
                 }
                 break;
             }
         }
         readList.clear();
         currentList.clear();
-        if (!show) {
+        if (!getRoll) {
             System.out.println(" No Record For Roll No has been Found : " + roll);
         }
-
     }
 
     // Function to display user details.
     public static void displayUser() {
-        boolean b = true;
-        int in = 0;
-        while (b) {
+        boolean play = true;
+        int input = 0;
+        while (play) {
             try {
                 System.out.println(" choose Option ");
                 System.out.println("\t 1. Display All users\n\t 2. Search By Roll No");
-                in = Integer.parseInt(scanner.nextLine());
-                switch (in) {
+                input = Integer.parseInt(scanner.nextLine());
+                switch (input) {
                     case 1:
                         readList = displayAllUser();
-                        b = false;
+                        play = false;
                         break;
                     case 2:
                         displayByRollNo();
-                        b = false;
+                        play = false;
                         break;
                     default:
                         System.out.println(" Enter correct Options");
@@ -211,26 +213,107 @@ public class Menu {
                 System.out.println(" Enter correct options");
             }
         }
-            if (in == 1) {
-                if (readList.isEmpty()) {
-                    System.out.println(" Student Record is Empty : please Add some Record ");
-                } else {
-                    System.out.println(" User Data From :" + fileName);
-                    System.out.printf("%-15s %-5s %-15s %15s%n", "NAME", "AGE", "ADDRESS", "ROLL NO", "COURSE");
-                    System.out.println("---------------------------------------------------------------------");
-                    for (StudentDetails user : readList) {
-                        System.out.printf("%-15s %-5d %-15s %20d%n", user.name, user.age, user.address, user.rollNo);
+        if (input == 1) {
+            if (readList.isEmpty()) {
+                System.out.println(" Student Record is Empty : please Add some Record ");
+            } else {
+                while (true) {
+                    System.out.println(" Enter The Order For Displaying Data:\n\t 1: Ascending order.\n\t 2. Descending Order");
+                    try {
+                        int inp = Integer.parseInt(scanner.nextLine());
+                        if (!(inp > 0 && inp < 3)) {
+                            System.out.println(" Enter Valid Options");
+                            continue;
+                        }
+                        switch (inp) {
+                            case 1:
+                                while (true) {
+                                    System.out.println("Ascending order By:\n\t 1: Name\n\t 2: Age\n\t 3: Roll No\n\t 4: Address");
+                                    try {
+                                        int inp1 = Integer.parseInt(scanner.nextLine());
+                                        if (!(inp1 > 0 && inp1 < 5)) {
+                                            System.out.println(" Enter valid choice: ");
+                                            continue;
+                                        }
+                                        System.out.println(" User Data From :" + Serialize.fileName);
+                                        System.out.printf("%-30s %-5s %-30s %15s%n", "NAME", "AGE", "ADDRESS", "ROLL NO", "COURSE");
+                                        System.out.println("--------------------------------------------------------------------------------------------");
+                                        for (StudentDetails user : readList) {
+                                            System.out.printf("%-30s %-5d %-30s %15d%n", user.name, user.age, user.address, user.rollNo);
+                                        }
+                                        switch (inp1) {
+                                            case 1:
+                                                readList.sort(Comparator.comparing(StudentDetails::getName, String.CASE_INSENSITIVE_ORDER));
+                                                break;
+                                            case 2:
+                                                readList.sort(Comparator.comparing(StudentDetails::getAge));
+                                                break;
+                                            case 3:
+                                                readList.sort(Comparator.comparing(StudentDetails::getRollNo));
+                                                break;
+                                            case 4:
+                                                readList.sort(Comparator.comparing(StudentDetails::getAddress));
+                                                break;
+                                        }
+                                    } catch (NumberFormatException e) {
+                                        System.out.println(" Enter Valid Options: ");
+                                        continue;
+                                    }
+                                    break;
+                                }
+                                break;
+                            case 2:
+                                while (true) {
+                                    System.out.println("Descending order By:\n\t 1: Name\n\t 2: Age\n\t 3: Roll No\n\t 4: Address");
+                                    try {
+                                        int inp2 = Integer.parseInt(scanner.nextLine());
+                                        if (!(inp2 >= 1 && inp2 <= 4)) {
+                                            System.out.println(" Enter Valid Choice");
+                                            continue;
+                                        }
+                                        System.out.println(" User Data From :" + Serialize.fileName);
+                                        System.out.printf("%-30s %-5s %-30s %15s%n", "NAME", "AGE", "ADDRESS", "ROLL NO", "COURSE");
+                                        System.out.println("--------------------------------------------------------------------------------------------");
+                                        for (StudentDetails user : readList) {
+                                            System.out.printf("%-30s %-5d %-30s %15d%n", user.name, user.age, user.address, user.rollNo);
+                                        }
+                                        switch (inp2) {
+                                            case 1:
+                                                readList.sort(Comparator.comparing(StudentDetails::getName, String.CASE_INSENSITIVE_ORDER).reversed());
+                                                break;
+                                            case 2:
+                                                readList.sort(Comparator.comparing(StudentDetails::getAge).reversed());
+                                                break;
+                                            case 3:
+                                                readList.sort(Comparator.comparing(StudentDetails::getRollNo).reversed());
+                                                break;
+                                            case 4:
+                                                readList.sort(Comparator.comparing(StudentDetails::getAddress).reversed());
+                                                break;
+                                        }
+                                    } catch (NumberFormatException e) {
+                                        System.out.println(" Enter Valid Options: ");
+                                        continue;
+                                    }
+                                    break;
+                                }
+                        }
+                        break;
+                    } catch (NumberFormatException e) {
+                        System.out.println(" Enter valid option: ");
                     }
-                   // System.out.println(readList);
-                    readList.clear();
-                    currentList.clear();
-
                 }
+                System.out.println(" After sorting");
+                System.out.printf("%-30s %-5s %-30s %15s%n", "NAME", "AGE", "ADDRESS", "ROLL NO", "COURSE");
+                for (StudentDetails user : readList) {
+                    System.out.printf("%-30s %-5d %-30s %15d%n", user.name, user.age, user.address, user.rollNo);
+                }
+                readList.clear();
+                currentList.clear();
 
             }
-
+        }
     }
-
 
     // Function to Delete user details
     public static void deleteUser() {
@@ -239,16 +322,16 @@ public class Menu {
             System.out.println(" There Are No record to available to Delete ");
             return;
         }
-        boolean b = true;
+        boolean notGetRoll = true;
         long in = 0;
         System.out.println(" Enter roll no to delete its Record ");
-        while (b) {
+        while (notGetRoll) {
             try {
                 in = Long.parseLong(scanner.nextLine());
                 if (in <= 0) {
                     System.out.println(" Roll No cant be Below 1. Enter Correct Roll No: ");
                 } else {
-                    b = false;
+                    notGetRoll = false;
                 }
             } catch (NumberFormatException e) {
                 System.out.println(" This is Not a Roll no. Enter Correct Roll no: ");
@@ -273,7 +356,6 @@ public class Menu {
 
 
     }
-
     // Used Serialization to save data to disk;
     public static void saveUserDetailToFile(List<StudentDetails> savedList) {
               Serialize.saveDataToDisk(savedList);
@@ -281,7 +363,6 @@ public class Menu {
               newStudentDetailList.clear();
               currentList.clear();;
     }
-
     // Function to save user details
     public static void saveUser() {
         if (newStudentDetailList.isEmpty()) {
@@ -295,22 +376,25 @@ public class Menu {
                 readList.addAll(newStudentDetailList);
                 saveUserDetailToFile(readList);
             }
-            System.out.println(" Successfully saved data to :" + fileName);
+            System.out.println(" Successfully saved data to :" + Serialize.fileName);
         }
-
     }
 
     // function to exit
     public static void exit() {
-        System.out.println();
+        if(!(newStudentDetailList.isEmpty())){
+            System.out.println(" Do you want to save before exit: Enter y for yes and Any key for no ");
+            String in = scanner.nextLine();
+            if(in.equalsIgnoreCase("y")){
+                saveUser();
+            }
+        }
         System.exit(1);
-
     }
 
     public static void main(String[] args) {
 
         int input;
-
         System.out.println("********STUDENT MANAGEMENT SYSTEM*********");
         // Ask for user input and validate the values.
         while (true) {
@@ -339,15 +423,13 @@ public class Menu {
                             break;
                     }
 
-                } else
+                } else {
                     System.out.println(" Enter valid choice");
+                }
 
             } catch (InputMismatchException | NumberFormatException e) {
-                System.out.println(" Enter valid choice ");
+                System.out.println(" Enter valid choice  ");
             }
-
         }
-
-
     }
 }

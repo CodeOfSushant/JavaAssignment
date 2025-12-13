@@ -17,12 +17,25 @@ public class StudentDetails implements Serializable {
         this.course = course;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public Long getRollNo() {
+        return rollNo;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
     @Override
     public String toString() {
         return "StudentDetails{\nStudent-Name=" + name + ",\nAge=" +age+",\nAddress="+address+",\nRoll no="+rollNo+",\nCourse="+String.valueOf(course)+"\n";}
-
-
-
 }
 
 
